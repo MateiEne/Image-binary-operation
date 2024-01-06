@@ -1,32 +1,17 @@
-package packWork;
+package packWork.BMPHandler;
+
+import packWork.ImageData;
+import packWork.ImageLoader;
+import packWork.Pixel;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class BMPImage implements Image {
-    private String filename;
+public class BMPImageLoader implements ImageLoader {
 
-    private int width;
-    private int height;
-    private Pixel[][] pixels;
-
-    public BMPImage(String filename) {
-        this.filename = filename;
-
-        width = 0;
-        height = 0;
-
-        pixels = new Pixel[height][width];
-    }
-
-    /**
-     *
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public void loadImage() throws IOException {
+    @Override
+    public ImageData loadImage(String filename) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(filename);
         BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
 
@@ -35,8 +20,8 @@ public class BMPImage implements Image {
         bufferedInputStream.read(header, 0, 54);
 
         // Extract image data
-        width = (header[21] & 0xff) << 24 | (header[20] & 0xff) << 16 | (header[19] & 0xff) << 8 | (header[18] & 0xff);
-        height = (header[25] & 0xff) << 24 | (header[24] & 0xff) << 16 | (header[23] & 0xff) << 8 | (header[22] & 0xff);
+        int width = (header[21] & 0xff) << 24 | (header[20] & 0xff) << 16 | (header[19] & 0xff) << 8 | (header[18] & 0xff);
+        int height = (header[25] & 0xff) << 24 | (header[24] & 0xff) << 16 | (header[23] & 0xff) << 8 | (header[22] & 0xff);
 
         int rowLength = width * 3; // Each pixel has 3 bytes (24 bits)
         // Adjust row length to make it multiple of 4 bytes (BMP padding)
@@ -51,7 +36,7 @@ public class BMPImage implements Image {
         bufferedInputStream.read(imageData, 0, imageDataSize);
 
         // convert imageData to Pixel matrix
-        pixels = new Pixel[height][width];
+        Pixel[][] pixels = new Pixel[height][width];
         int imageDataIndex = 0;
         for (int row = height - 1; row >= 0; row--) {
             for (int col = 0; col < width; col++) {
@@ -66,20 +51,7 @@ public class BMPImage implements Image {
 
         // Close streams
         bufferedInputStream.close();
-    }
 
-    @Override
-    public int getWidth() {
-        return width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    @Override
-    public Pixel[][] getPixels() {
-        return pixels;
+        return new ImageData(width, height, pixels);
     }
 }

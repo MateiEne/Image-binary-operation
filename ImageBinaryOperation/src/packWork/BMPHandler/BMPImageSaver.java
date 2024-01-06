@@ -1,11 +1,15 @@
-package packWork;
+package packWork.BMPHandler;
 
-import java.io.FileNotFoundException;
+import packWork.ImageData;
+import packWork.ImageSaver;
+import packWork.Pixel;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class BMPFileWriter {
-    public static void writeImage(String filename, Image image) throws IOException {
+public class BMPImageSaver implements ImageSaver {
+    @Override
+    public void saveImage(String filename, ImageData image) throws IOException {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -51,12 +55,12 @@ public class BMPFileWriter {
         bmpData[28] = 24; // Bits per pixel
 
         // Write pixel data to the byte array
-        Pixel[][] pixelMatrix = image.getPixels();
+        Pixel[][] pixels = image.getPixels();
 
         int pixelIndex = imageDataOffset;
         for (int y = height - 1; y >= 0; y--) {
             for (int x = 0; x < width; x++) {
-                Pixel pixel = pixelMatrix[y][x];
+                Pixel pixel = pixels[y][x];
                 bmpData[pixelIndex++] = pixel.B;
                 bmpData[pixelIndex++] = pixel.G;
                 bmpData[pixelIndex++] = pixel.R;
