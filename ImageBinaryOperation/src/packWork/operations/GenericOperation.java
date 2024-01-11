@@ -31,4 +31,23 @@ public abstract class GenericOperation implements Operation {
 
         return combinedImage;
     }
+
+    @Override
+    public ImageData execute(ImageData... images) {
+        if (images.length == 0) {
+            return new ImageData(0, 0);
+        }
+
+        if (images.length == 1) {
+            return images[0];
+        }
+
+        ImageData result = execute(images[0], images[1]);
+
+        for (int i = 2; i < images.length; i++) {
+            result = execute(result, images[i]);
+        }
+
+        return result;
+    }
 }

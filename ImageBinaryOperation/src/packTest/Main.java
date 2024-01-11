@@ -18,6 +18,8 @@ public class Main {
 
         ImageData snowboarderImage = imageLoader.loadImage("images/test.bmp");
         ImageData skierImage = imageLoader.loadImage("images/sch.bmp");
+        ImageData snowboarderImage2 = imageLoader.loadImage("images/snowboard2.bmp");
+        ImageData skierImage2 = imageLoader.loadImage("images/ski2.bmp");
 
         ImageSaver imageSaver = new BMPImageSaver();
 
@@ -32,5 +34,9 @@ public class Main {
         operation = new XOROperation();
         combinedImage = operation.execute(snowboarderImage, skierImage);
         imageSaver.saveImage("images/xor.bmp", combinedImage);
+
+        operation = new ANDOperation();
+        combinedImage = operation.execute(snowboarderImage, snowboarderImage2, skierImage);
+        imageSaver.saveImage("images/andAndAnd.bmp", combinedImage);
     }
 }

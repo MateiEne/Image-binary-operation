@@ -7,5 +7,5 @@ import java.util.List;
 public interface Operation {
     ImageData execute(ImageData image1, ImageData image2);
 
-    //ImageData execute(ImageData... images);
+    ImageData execute(ImageData... images);
 }
