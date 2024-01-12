@@ -1,4 +1,4 @@
-package packWork;
+package packWork.image;
 
 public class ImageData {
     protected int width;

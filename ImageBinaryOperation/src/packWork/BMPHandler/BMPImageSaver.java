@@ -1,15 +1,16 @@
 package packWork.BMPHandler;
 
-import packWork.ImageData;
-import packWork.ImageSaver;
-import packWork.Pixel;
+import packWork.image.ImageData;
+import packWork.image.ImageSaver;
+import packWork.image.Pixel;
+import packWork.exceptions.InvalidArgumentException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class BMPImageSaver implements ImageSaver {
     @Override
-    public void saveImage(String filename, ImageData image) throws IOException {
+    public void saveImage(String filename, ImageData image) throws InvalidArgumentException {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -72,8 +73,13 @@ public class BMPImageSaver implements ImageSaver {
         }
 
         // write byte array to file
-        FileOutputStream fos = new FileOutputStream(filename);
-        fos.write(bmpData);
-        fos.close();
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(filename);
+            fos.write(bmpData);
+            fos.close();
+        } catch (IOException e) {
+            throw new InvalidArgumentException("Nu s-a putut salva imaginea in fisierul: " + filename);
+        }
     }
 }

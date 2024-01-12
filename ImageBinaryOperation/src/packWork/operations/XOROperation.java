@@ -1,6 +1,6 @@
 package packWork.operations;
 
-import packWork.Pixel;
+import packWork.image.Pixel;
 
 public class XOROperation extends GenericOperation {
     @Override

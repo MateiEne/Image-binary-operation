@@ -1,4 +1,4 @@
-package packWork;
+package packWork.image;
 
 public class Pixel {
     public byte R;

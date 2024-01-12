@@ -1,8 +1,6 @@
 package packWork.operations;
 
-import packWork.ImageData;
-
-import java.util.List;
+import packWork.image.ImageData;
 
 public interface Operation {
     ImageData execute(ImageData image1, ImageData image2);

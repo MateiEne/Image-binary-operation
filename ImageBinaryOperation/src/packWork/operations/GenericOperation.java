@@ -1,7 +1,7 @@
 package packWork.operations;
 
-import packWork.ImageData;
-import packWork.Pixel;
+import packWork.image.ImageData;
+import packWork.image.Pixel;
 
 public abstract class GenericOperation implements Operation {
     protected abstract Pixel combinePixels(Pixel p1, Pixel p2);
