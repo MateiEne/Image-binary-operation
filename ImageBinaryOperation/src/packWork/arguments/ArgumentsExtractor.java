@@ -11,6 +11,7 @@ public class ArgumentsExtractor {
     private static final String operationMark;
     private static final String outputMark;
 
+    // static initializer block
     static {
         operationMark = "-op";
         outputMark = "-o";

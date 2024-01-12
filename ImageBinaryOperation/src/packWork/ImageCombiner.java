@@ -29,7 +29,7 @@ public class ImageCombiner {
             }
 
             Operation operation = getOperation(arguments.operation);
-            ImageData combinedImage = operation.execute(imageDataList.toArray(ImageData[]::new));
+            ImageData combinedImage = operation.execute(imageDataList.toArray(ImageData[]::new)); // convert list to varargs
 
             ImageSaver imageSaver = new BMPImageSaver();
             imageSaver.saveImage(arguments.outputImagePath, combinedImage);

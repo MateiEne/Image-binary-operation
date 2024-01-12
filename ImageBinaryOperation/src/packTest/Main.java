@@ -22,7 +22,7 @@ import java.util.Scanner;
 // then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) throws Exception {
-        /*
+
         // images/test.bmp images/sch.bmp images/snowboard2.bmp images/ski2.bmp -op xor -o images/result.bmp
         Arguments arguments;
         if (args.length == 0) {
@@ -39,9 +39,9 @@ public class Main {
         System.out.println(arguments);
         ImageCombiner imageCombiner = new ImageCombiner();
         imageCombiner.combineImages(arguments);
-         */
 
 
+        /*
         ImageLoader imageLoader = new BMPImageLoader();
 
         ImageData snowboarderImage = imageLoader.loadImage("images/test.bmp");
@@ -66,7 +66,7 @@ public class Main {
         operation = new ANDOperation();
         combinedImage = operation.execute(snowboarderImage, snowboarderImage2, skierImage);
         imageSaver.saveImage("images/andAndAnd.bmp", combinedImage);
-
+         */
     }
 
     static Arguments readArgumentsFromKeyboard() {

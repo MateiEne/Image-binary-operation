@@ -24,7 +24,7 @@ public abstract class GenericOperation implements Operation {
                 } else if (p2 != null) {
                     combinedImage.setPixel(j, i, p2);
                 } else {
-                    combinedImage.setPixel(j, i, new Pixel((byte) 0, (byte) 0, (byte) 0));
+                    combinedImage.setPixel(j, i, new Pixel());
                 }
             }
         }
