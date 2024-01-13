@@ -1,20 +1,18 @@
 package packTest;
 
+import packWork.BMPHandler.BMPImageLoader;
+import packWork.BMPHandler.BMPImageSaver;
 import packWork.ImageCombiner;
 import packWork.arguments.ArgumentOperation;
 import packWork.arguments.Arguments;
-import packWork.arguments.ArgumentsExtractor;
-import packWork.BMPHandler.BMPImageLoader;
-import packWork.BMPHandler.BMPImageSaver;
 import packWork.image.ImageData;
 import packWork.image.ImageLoader;
 import packWork.image.ImageSaver;
 import packWork.operations.ANDOperation;
-import packWork.operations.OROperation;
 import packWork.operations.Operation;
-import packWork.operations.XOROperation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -48,11 +46,11 @@ public class Main {
         ImageData snowboarderImage2 = imageLoader.loadImage("images/snowboard2.bmp");
         ImageData skierImage2 = imageLoader.loadImage("images/ski2.bmp");
 
-        ImageSaver imageSaver = new BMPImageSaver();
 
-        Operation operation = new ANDOperation();
-        ImageData combinedImage = operation.execute(snowboarderImage, skierImage);
-        imageSaver.saveImage("images/and1.bmp", combinedImage);
+        Arguments arguments = new Arguments(Arrays.asList("images/test.bmp", "images/sch.bmp"), "images/and2.bmp", ArgumentOperation.AND);
+
+        ImageCombiner imageCombiner = new ImageCombiner();
+        imageCombiner.combineImagesProducerConsumer(arguments);
     }
 
     static Arguments readArgumentsFromKeyboard() {
@@ -68,7 +66,7 @@ public class Main {
         }
 
         ArgumentOperation argumentOperation;
-        for (;;) {
+        for (; ; ) {
             System.out.println("Introduceti operatia (AND, OR, XOR):");
             String operation = sc.next();
             argumentOperation = ArgumentOperation.valueOfLabel(operation);
