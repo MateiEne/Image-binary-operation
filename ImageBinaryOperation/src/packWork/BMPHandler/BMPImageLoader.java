@@ -9,6 +9,8 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BMPImageLoader implements ImageLoader {
 
@@ -43,10 +45,28 @@ public class BMPImageLoader implements ImageLoader {
             byte[] imageData = new byte[imageDataSize];
             bufferedInputStream.read(imageData, 0, imageDataSize);
 
+            System.out.println(width * height * 3);
+            System.out.println(imageDataSize);
+
+            List<Byte> bytes = new ArrayList<>(imageDataSize);
+            int index = 0;
+            while (index < imageDataSize) {
+                for (int col = 0; col < width; col++) {
+                    bytes.add(imageData[index]);
+                    bytes.add(imageData[index + 1]);
+                    bytes.add(imageData[index + 2]);
+
+                    index += 3;
+                }
+                index += padding;
+            }
+
+            System.out.println(bytes.size());
+
             // convert imageData to Pixel matrix
             Pixel[][] pixels = new Pixel[height][width];
             int imageDataIndex = 0;
-            for (int row = height - 1; row >= 0; row--) {
+            /*for (int row = height - 1; row >= 0; row--) {
                 for (int col = 0; col < width; col++) {
                     byte B = imageData[imageDataIndex];
                     byte G = imageData[imageDataIndex + 1];
@@ -55,7 +75,17 @@ public class BMPImageLoader implements ImageLoader {
                     imageDataIndex += 3;
                 }
                 imageDataIndex += padding;
+            }*/
+            for (int row = height - 1; row >= 0; row--) {
+                for (int col = 0; col < width; col++) {
+                    byte B = bytes.get(imageDataIndex);
+                    byte G = bytes.get(imageDataIndex + 1);
+                    byte R = bytes.get(imageDataIndex + 2);
+                    pixels[row][col] = new Pixel(R, G, B);
+                    imageDataIndex += 3;
+                }
             }
+
 
             // Close streams
             bufferedInputStream.close();

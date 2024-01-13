@@ -24,24 +24,23 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         // images/test.bmp images/sch.bmp images/snowboard2.bmp images/ski2.bmp -op xor -o images/result.bmp
-        Arguments arguments;
-        if (args.length == 0) {
-            arguments = readArgumentsFromKeyboard();
-        } else {
-            try {
-                arguments = ArgumentsExtractor.extractArguments(args);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                return;
-            }
-        }
+//        Arguments arguments;
+//        if (args.length == 0) {
+//            arguments = readArgumentsFromKeyboard();
+//        } else {
+//            try {
+//                arguments = ArgumentsExtractor.extractArguments(args);
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//                return;
+//            }
+//        }
+//
+//        System.out.println(arguments);
+//        ImageCombiner imageCombiner = new ImageCombiner();
+//        imageCombiner.combineImages(arguments);
 
-        System.out.println(arguments);
-        ImageCombiner imageCombiner = new ImageCombiner();
-        imageCombiner.combineImages(arguments);
 
-
-        /*
         ImageLoader imageLoader = new BMPImageLoader();
 
         ImageData snowboarderImage = imageLoader.loadImage("images/test.bmp");
@@ -53,20 +52,7 @@ public class Main {
 
         Operation operation = new ANDOperation();
         ImageData combinedImage = operation.execute(snowboarderImage, skierImage);
-        imageSaver.saveImage("images/and.bmp", combinedImage);
-
-        operation = new OROperation();
-        combinedImage = operation.execute(snowboarderImage, skierImage);
-        imageSaver.saveImage("images/or.bmp", combinedImage);
-
-        operation = new XOROperation();
-        combinedImage = operation.execute(snowboarderImage, skierImage);
-        imageSaver.saveImage("images/xor.bmp", combinedImage);
-
-        operation = new ANDOperation();
-        combinedImage = operation.execute(snowboarderImage, snowboarderImage2, skierImage);
-        imageSaver.saveImage("images/andAndAnd.bmp", combinedImage);
-         */
+        imageSaver.saveImage("images/and1.bmp", combinedImage);
     }
 
     static Arguments readArgumentsFromKeyboard() {
