@@ -1,9 +1,9 @@
 package packWork.BMPHandler;
 
+import packWork.exceptions.InvalidArgumentException;
 import packWork.image.ImageData;
 import packWork.image.ImageLoader;
 import packWork.image.Pixel;
-import packWork.exceptions.InvalidArgumentException;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -14,15 +14,8 @@ public class BMPImageLoader implements ImageLoader {
 
     @Override
     public ImageData loadImage(String filename) throws InvalidArgumentException {
-        FileInputStream fileInputStream;
-
         try {
-            fileInputStream = new FileInputStream(filename);
-        } catch (FileNotFoundException ex) {
-            throw new InvalidArgumentException("Nu s-a putut citit fisierul: " + filename);
-        }
-
-        try {
+            FileInputStream fileInputStream = new FileInputStream(filename);
             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
 
             // Read BMP header
@@ -66,10 +59,12 @@ public class BMPImageLoader implements ImageLoader {
 
             // Close streams
             bufferedInputStream.close();
+            fileInputStream.close();
             return new ImageData(width, height, pixels);
+        } catch (FileNotFoundException ex) {
+            throw new InvalidArgumentException("Nu s-a putut citit fisierul: " + filename);
         } catch (IOException ex) {
             throw new InvalidArgumentException("Fisierul " + filename + " este corupt");
         }
-
     }
 }

@@ -1,9 +1,9 @@
 package packWork.BMPHandler;
 
+import packWork.exceptions.InvalidArgumentException;
 import packWork.image.ImageData;
 import packWork.image.ImageSaver;
 import packWork.image.Pixel;
-import packWork.exceptions.InvalidArgumentException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
