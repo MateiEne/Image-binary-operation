@@ -1,5 +1,8 @@
 package packWork.prodConReadFile;
 
+import packWork.exceptions.InvalidArgumentException;
+import packWork.exceptions.UnexpectedException;
+
 public class DataBuffer {
     private boolean hasFinished = false;
     private byte[] data;
@@ -7,20 +10,20 @@ public class DataBuffer {
 
     private boolean producerClosed = false;
 
-    public synchronized byte[] getData() {
-        if (producerClosed) {
+    public synchronized byte[] getData() throws UnexpectedException {
+        if (producerClosed || hasFinished) {
             return null;
         }
 
         while (!available) {
             try {
-                if (producerClosed) {
+                // Asteapta producatorul sa puna o valoare
+                wait();
+                if (producerClosed || hasFinished) {
                     return null;
                 }
-                wait();
-                // Asteapta producatorul sa puna o valoare
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new UnexpectedException("system failed");
             }
         }
 
@@ -29,13 +32,18 @@ public class DataBuffer {
         return data;
     }
 
-    public synchronized void putData(byte[] data) {
+    public synchronized void putData(byte[] data) throws UnexpectedException {
+        if (producerClosed || hasFinished) {
+            return;
+        }
+
+
         while (available) {
             try {
                 wait();
                 // Asteapta consumatorul sa preia valoarea
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new UnexpectedException("system failed");
             }
         }
 
@@ -44,28 +52,27 @@ public class DataBuffer {
         notifyAll();
     }
 
-    public synchronized void finish() {
+    public synchronized void finish() throws UnexpectedException {
         while (available) {
             try {
                 wait();
                 // Asteapta consumatorul sa preia valoarea
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new UnexpectedException("system failed");
             }
         }
 
         this.hasFinished = true;
-        this.available = true;
         notifyAll();
     }
 
-    public synchronized void signalProducerClosed() {
+    public synchronized void signalProducerClosed() throws UnexpectedException {
         while (available) {
             try {
                 wait();
                 // Asteapta consumatorul sa preia valoarea
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                throw new UnexpectedException("system failed");
             }
         }
 

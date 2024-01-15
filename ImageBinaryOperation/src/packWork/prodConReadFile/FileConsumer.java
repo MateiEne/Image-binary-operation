@@ -1,5 +1,7 @@
 package packWork.prodConReadFile;
 
+import packWork.exceptions.UnexpectedException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,14 +19,21 @@ public class FileConsumer extends Thread {
     @Override
     public void run() {
         while (true) {
-            byte[] chunk = dataBuffer.getData();
+            byte[] chunk;
+            try {
+                chunk = dataBuffer.getData();
+            } catch (UnexpectedException e) {
+                System.out.println(e.getMessage());
+                data = null;
+                break;
+            }
 
             if (dataBuffer.isProducerClosed()) {
                 data = null;
                 return;
             }
 
-            if (dataBuffer.hasFinished()) {
+            if (dataBuffer.hasFinished() || chunk == null) {
                 break;
             }
 

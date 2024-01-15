@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ImageCombiner {
-
     public void combineImages(Arguments arguments) {
         try {
             ImageLoader imageLoader = new BMPImageLoader();
@@ -33,7 +32,7 @@ public class ImageCombiner {
             }
 
             Operation operation = getOperation(arguments.operation);
-            ImageData combinedImage = operation.execute(imageDataList.toArray(ImageData[]::new)); // convert list to varargs
+            ImageData combinedImage = operation.execute(imageDataList.toArray(new ImageData[0])); // convert list to varargs
 
             ImageSaver imageSaver = new BMPImageSaver();
             imageSaver.saveImage(arguments.outputImagePath, combinedImage);
@@ -47,16 +46,12 @@ public class ImageCombiner {
         List<ImageData> imageDataList = readAllFilesInParallel(arguments.inputImagesPath);
 
         Operation operation = getOperation(arguments.operation);
-        ImageData combinedImage = operation.execute(imageDataList.toArray(ImageData[]::new)); // convert list to varargs
+        ImageData combinedImage = operation.execute(imageDataList.toArray(new ImageData[0])); // convert list to varargs
 
         saveImageAsync(arguments.outputImagePath, combinedImage);
     }
 
     private List<ImageData> readAllFilesInParallel(List<String> files) {
-        MemoryImageLoader imageLoader = new BMPImageLoader();
-
-        List<ImageData> result = new ArrayList<>();
-
         List<FileConsumer> fileConsumers = new ArrayList<>();
 
         // generate file producer and file consumer threads for each file
@@ -75,7 +70,11 @@ public class ImageCombiner {
         // wait for all the threads that are reading the files to finish
         waitForThreadsToFinish(fileConsumers);
 
+
         // all threads have finished => retrieve the files
+        MemoryImageLoader imageLoader = new BMPImageLoader();
+        List<ImageData> result = new ArrayList<>();
+
         fileConsumers.forEach(fc -> {
             try {
                 result.add(imageLoader.loadImage(fc.getData()));
@@ -136,10 +135,15 @@ public class ImageCombiner {
     }
 
     private Operation getOperation(ArgumentOperation operation) {
-        return switch (operation) {
-            case AND -> new ANDOperation();
-            case OR -> new OROperation();
-            case XOR -> new XOROperation();
-        };
+        switch (operation) {
+            case AND:
+                return new ANDOperation();
+            case OR:
+                return new OROperation();
+            case XOR:
+                return new XOROperation();
+        }
+
+        return null;
     }
 }

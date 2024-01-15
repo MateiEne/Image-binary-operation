@@ -5,6 +5,7 @@ import packWork.BMPHandler.BMPImageSaver;
 import packWork.ImageCombiner;
 import packWork.arguments.ArgumentOperation;
 import packWork.arguments.Arguments;
+import packWork.arguments.ArgumentsExtractor;
 import packWork.image.ImageData;
 import packWork.image.ImageLoader;
 import packWork.image.ImageSaver;
@@ -22,7 +23,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         // images/test.bmp images/sch.bmp images/snowboard2.bmp images/ski2.bmp -op xor -o images/result.bmp
-//        Arguments arguments;
+        Arguments arguments;
 //        if (args.length == 0) {
 //            arguments = readArgumentsFromKeyboard();
 //        } else {
@@ -33,24 +34,27 @@ public class Main {
 //                return;
 //            }
 //        }
-//
-//        System.out.println(arguments);
-//        ImageCombiner imageCombiner = new ImageCombiner();
+
+
+        arguments = new Arguments(Arrays.asList("images/test.bmp", "images/sch.bmp"), "images/and6.bmp", ArgumentOperation.AND);
+        ImageCombiner imageCombiner = new ImageCombiner();
 //        imageCombiner.combineImages(arguments);
 
-
-        ImageLoader imageLoader = new BMPImageLoader();
-
-        ImageData snowboarderImage = imageLoader.loadImage("images/test.bmp");
-        ImageData skierImage = imageLoader.loadImage("images/sch.bmp");
-        ImageData snowboarderImage2 = imageLoader.loadImage("images/snowboard2.bmp");
-        ImageData skierImage2 = imageLoader.loadImage("images/ski2.bmp");
-
-
-        Arguments arguments = new Arguments(Arrays.asList("images/test.bmp", "images/sch.bmp"), "images/and4.bmp", ArgumentOperation.AND);
-
-        ImageCombiner imageCombiner = new ImageCombiner();
         imageCombiner.combineImagesProducerConsumer(arguments);
+
+
+//        ImageLoader imageLoader = new BMPImageLoader();
+//
+//        ImageData snowboarderImage = imageLoader.loadImage("images/test.bmp");
+//        ImageData skierImage = imageLoader.loadImage("images/sch.bmp");
+//        ImageData snowboarderImage2 = imageLoader.loadImage("images/snowboard2.bmp");
+//        ImageData skierImage2 = imageLoader.loadImage("images/ski2.bmp");
+//
+//
+//        arguments = new Arguments(Arrays.asList("images/test.bmp", "images/sch.bmp"), "images/and4.bmp", ArgumentOperation.AND);
+//
+//        imageCombiner = new ImageCombiner();
+//        imageCombiner.combineImagesProducerConsumer(arguments);
     }
 
     static Arguments readArgumentsFromKeyboard() {

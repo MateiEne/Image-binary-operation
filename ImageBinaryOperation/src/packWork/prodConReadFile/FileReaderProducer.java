@@ -1,5 +1,7 @@
 package packWork.prodConReadFile;
 
+import packWork.exceptions.UnexpectedException;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,19 +36,35 @@ public class FileReaderProducer extends Thread {
             }
         } catch (FileNotFoundException e) {
             System.out.println("Nu s-a gasit fisierul: " + filename);
-            dataBuffer.signalProducerClosed();
+            signalProducerClosed();
             return;
         } catch (IOException e) {
             System.out.println("Fisierul " + filename + " este corupt");
-            dataBuffer.signalProducerClosed();
+            signalProducerClosed();
             return;
         } catch (InterruptedException e) {
             System.out.println("Eroare la citirea fisierului " + filename);
-            dataBuffer.signalProducerClosed();
+            signalProducerClosed();
+            return;
+        } catch (UnexpectedException e) {
+            System.out.println(e.getMessage());
+            signalProducerClosed();
             return;
         }
 
         // Signal the end of file
-        dataBuffer.finish();
+        try {
+            dataBuffer.finish();
+        } catch (UnexpectedException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void signalProducerClosed() {
+        try {
+            dataBuffer.signalProducerClosed();
+        } catch (UnexpectedException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
