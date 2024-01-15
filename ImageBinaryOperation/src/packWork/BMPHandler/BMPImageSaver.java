@@ -3,14 +3,30 @@ package packWork.BMPHandler;
 import packWork.exceptions.InvalidArgumentException;
 import packWork.image.ImageData;
 import packWork.image.ImageSaver;
+import packWork.image.MemoryImageSaver;
 import packWork.image.Pixel;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class BMPImageSaver implements ImageSaver {
+public class BMPImageSaver implements ImageSaver, MemoryImageSaver {
     @Override
     public void saveImage(String filename, ImageData image) throws InvalidArgumentException {
+        byte[] memoryBMP = saveImage(image);
+
+        // write byte array to file
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(filename);
+            fos.write(memoryBMP);
+            fos.close();
+        } catch (IOException e) {
+            throw new InvalidArgumentException("Nu s-a putut salva imaginea in fisierul: " + filename);
+        }
+    }
+
+    @Override
+    public byte[] saveImage(ImageData image) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -72,14 +88,6 @@ public class BMPImageSaver implements ImageSaver {
             }
         }
 
-        // write byte array to file
-        FileOutputStream fos;
-        try {
-            fos = new FileOutputStream(filename);
-            fos.write(bmpData);
-            fos.close();
-        } catch (IOException e) {
-            throw new InvalidArgumentException("Nu s-a putut salva imaginea in fisierul: " + filename);
-        }
+        return bmpData;
     }
 }

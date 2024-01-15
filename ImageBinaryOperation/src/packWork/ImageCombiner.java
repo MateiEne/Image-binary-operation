@@ -5,18 +5,18 @@ import packWork.BMPHandler.BMPImageSaver;
 import packWork.arguments.ArgumentOperation;
 import packWork.arguments.Arguments;
 import packWork.exceptions.InvalidArgumentException;
-import packWork.image.ImageData;
-import packWork.image.ImageLoader;
-import packWork.image.ImageSaver;
-import packWork.image.MemoryImageLoader;
+import packWork.image.*;
 import packWork.operations.ANDOperation;
 import packWork.operations.OROperation;
 import packWork.operations.Operation;
 import packWork.operations.XOROperation;
+import packWork.pipesWriteFile.OutputDataConsumer;
+import packWork.pipesWriteFile.OutputDataProducer;
 import packWork.prodConReadFile.DataBuffer;
 import packWork.prodConReadFile.FileConsumer;
 import packWork.prodConReadFile.FileReaderProducer;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,17 +44,26 @@ public class ImageCombiner {
     }
 
     public void combineImagesProducerConsumer(Arguments arguments) {
+        List<ImageData> imageDataList = readAllFilesInParallel(arguments.inputImagesPath);
 
+        Operation operation = getOperation(arguments.operation);
+        ImageData combinedImage = operation.execute(imageDataList.toArray(ImageData[]::new)); // convert list to varargs
+
+        saveImageAsync(arguments.outputImagePath, combinedImage);
+    }
+
+    private List<ImageData> readAllFilesInParallel(List<String> files) {
         MemoryImageLoader imageLoader = new BMPImageLoader();
 
-        List<ImageData> imageDataList = new ArrayList<>();
+        List<ImageData> result = new ArrayList<>();
 
         List<FileConsumer> fileConsumers = new ArrayList<>();
 
-        for (String s : arguments.inputImagesPath) {
+        // generate file producer and file consumer threads for each file
+        for (String filename : files) {
             DataBuffer dataBuffer = new DataBuffer();
 
-            FileReaderProducer producer = new FileReaderProducer(s, 10000, dataBuffer);
+            FileReaderProducer producer = new FileReaderProducer(filename, 50000, dataBuffer);
             FileConsumer consumer = new FileConsumer(dataBuffer);
 
             fileConsumers.add(consumer);
@@ -64,8 +73,24 @@ public class ImageCombiner {
         }
 
         // wait for all the threads that are reading the files to finish
+        waitForThreadsToFinish(fileConsumers);
+
+        // all threads have finished => retrieve the files
+        fileConsumers.forEach(fc -> {
+            try {
+                result.add(imageLoader.loadImage(fc.getData()));
+            } catch (InvalidArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        });
+
+        return result;
+    }
+
+    private void waitForThreadsToFinish(List<? extends Thread> threads) {
+        // wait for all the threads that are reading the files to finish
         while (true) {
-            Thread t = firstThreadNotDead(fileConsumers);
+            Thread t = firstThreadNotDead(threads);
             if (t == null) {
                 // all have finished
                 break;
@@ -78,29 +103,9 @@ public class ImageCombiner {
                 throw new RuntimeException(e);
             }
         }
-
-        // all threads have finished => retrieve the files
-        fileConsumers.forEach(fc -> {
-            try {
-                imageDataList.add(imageLoader.loadImage(fc.getData()));
-            } catch (InvalidArgumentException e) {
-                System.out.println(e.getMessage());
-            }
-        });
-
-        try {
-            Operation operation = getOperation(arguments.operation);
-            ImageData combinedImage = operation.execute(imageDataList.toArray(ImageData[]::new)); // convert list to varargs
-
-            ImageSaver imageSaver = new BMPImageSaver();
-            imageSaver.saveImage(arguments.outputImagePath, combinedImage);
-
-        } catch (InvalidArgumentException ex) {
-            System.out.println(ex.getMessage());
-        }
     }
 
-    private Thread firstThreadNotDead(List<FileConsumer> threads) {
+    private Thread firstThreadNotDead(List<? extends Thread> threads) {
         for (Thread t : threads) {
             if (t.isAlive()) {
                 return t;
@@ -110,6 +115,25 @@ public class ImageCombiner {
         return null;
     }
 
+    private void saveImageAsync(String filename, ImageData image) {
+        PipedOutputStream pipeOut = new PipedOutputStream();
+        PipedInputStream pipeIn;
+        try {
+            pipeIn = new PipedInputStream(pipeOut);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        DataOutputStream outputStream = new DataOutputStream(pipeOut);
+        DataInputStream inputStream = new DataInputStream(pipeIn);
+
+        MemoryImageSaver imageSaver = new BMPImageSaver();
+        OutputDataProducer outputDataProducer = new OutputDataProducer(outputStream, imageSaver.saveImage(image));
+        OutputDataConsumer outputDataConsumer = new OutputDataConsumer(inputStream, filename);
+
+        outputDataProducer.start();
+        outputDataConsumer.start();
+    }
 
     private Operation getOperation(ArgumentOperation operation) {
         return switch (operation) {
