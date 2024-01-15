@@ -48,29 +48,45 @@ public class ImageCombiner {
         MemoryImageLoader imageLoader = new BMPImageLoader();
 
         List<ImageData> imageDataList = new ArrayList<>();
+
+        List<FileConsumer> fileConsumers = new ArrayList<>();
+
         for (String s : arguments.inputImagesPath) {
             DataBuffer dataBuffer = new DataBuffer();
 
             FileReaderProducer producer = new FileReaderProducer(s, 10000, dataBuffer);
             FileConsumer consumer = new FileConsumer(dataBuffer);
 
+            fileConsumers.add(consumer);
+
             producer.start();
             consumer.start();
+        }
 
+        // wait for all the threads that are reading the files to finish
+        while (true) {
+            Thread t = firstThreadNotDead(fileConsumers);
+            if (t == null) {
+                // all have finished
+                break;
+            }
+
+            // wait for this thread to finish
             try {
-                consumer.join();
-
-                ImageData imageData = imageLoader.loadImage(consumer.getData());
-                imageDataList.add(imageData);
+                t.join();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            } catch (InvalidArgumentException e) {
-                System.out.println(e.getMessage());
-                return;
             }
         }
 
-
+        // all threads have finished => retrieve the files
+        fileConsumers.forEach(fc -> {
+            try {
+                imageDataList.add(imageLoader.loadImage(fc.getData()));
+            } catch (InvalidArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        });
 
         try {
             Operation operation = getOperation(arguments.operation);
@@ -83,6 +99,17 @@ public class ImageCombiner {
             System.out.println(ex.getMessage());
         }
     }
+
+    private Thread firstThreadNotDead(List<FileConsumer> threads) {
+        for (Thread t : threads) {
+            if (t.isAlive()) {
+                return t;
+            }
+        }
+
+        return null;
+    }
+
 
     private Operation getOperation(ArgumentOperation operation) {
         return switch (operation) {

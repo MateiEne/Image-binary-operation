@@ -47,7 +47,7 @@ public class Main {
         ImageData skierImage2 = imageLoader.loadImage("images/ski2.bmp");
 
 
-        Arguments arguments = new Arguments(Arrays.asList("images/test.bmp", "images/sch.bmp"), "images/and2.bmp", ArgumentOperation.AND);
+        Arguments arguments = new Arguments(Arrays.asList("images/test.bmp", "images/sch.bmp"), "images/and3.bmp", ArgumentOperation.AND);
 
         ImageCombiner imageCombiner = new ImageCombiner();
         imageCombiner.combineImagesProducerConsumer(arguments);

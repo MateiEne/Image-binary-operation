@@ -28,7 +28,7 @@ public class FileReaderProducer extends Thread {
                 System.arraycopy(buffer, 0, data, 0, bytesRead);
 
                 dataBuffer.putData(data);
-                System.out.println("Producer: Produced: " + bytesRead + " bytes");
+                System.out.println("Producer: Produced: " + bytesRead + " bytes from " + filename);
 
                 Thread.sleep(100); // Simulate some processing time
             }
