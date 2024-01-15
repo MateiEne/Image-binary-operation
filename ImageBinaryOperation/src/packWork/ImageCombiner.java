@@ -47,7 +47,11 @@ public class ImageCombiner {
     }
 
     public void combineImagesProducerConsumer(Arguments arguments) {
+        long startTime = System.currentTimeMillis();
         List<ImageData> imageDataList = readAllFilesInParallel(arguments.inputImagesPath);
+        long stopTime = System.currentTimeMillis();
+
+        System.out.println("TIMP DE EXECUTIE CITIREA FISIERELOR: " + (stopTime - startTime));
 
         Operation operation = getOperation(arguments.operation);
         if (operation == null) {
@@ -55,7 +59,11 @@ public class ImageCombiner {
             return;
         }
 
+        startTime = System.currentTimeMillis();
         ImageData combinedImage = operation.execute(imageDataList.toArray(new ImageData[0])); // convert list to varargs
+        stopTime = System.currentTimeMillis();
+
+        System.out.println("TIMP DE EXECUTIE PROCESARE IMAGINE: " + (stopTime - startTime));
 
         saveImageAsync(arguments.outputImagePath, combinedImage);
     }
@@ -142,7 +150,19 @@ public class ImageCombiner {
         OutputDataConsumer outputDataConsumer = new OutputDataConsumer(inputStream, filename);
 
         outputDataProducer.start();
+
+        long startTime = System.currentTimeMillis();
         outputDataConsumer.start();
+
+        try {
+            outputDataConsumer.join();
+        } catch (InterruptedException e) {
+            System.out.println("system error");
+        }
+
+        long stopTime = System.currentTimeMillis();
+
+        System.out.println("TIMP DE EXECUTIE SALVARE IMAGINE: " + (stopTime - startTime));
     }
 
     private Operation getOperation(ArgumentOperation operation) {
