@@ -40,18 +40,15 @@ public class OutputDataConsumer extends Thread {
                 System.out.println("OutputDataConsumer a primit " + dataRead + " bytes");
                 fileOutputStream.write(data, 0, dataRead);
                 fileOutputStream.flush();
-
-
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("system error");
             }
-
         }
 
         try {
             fileOutputStream.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("system error");
         }
     }
 }

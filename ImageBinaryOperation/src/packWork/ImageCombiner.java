@@ -32,6 +32,10 @@ public class ImageCombiner {
             }
 
             Operation operation = getOperation(arguments.operation);
+            if (operation == null) {
+                System.out.println("eroare la introducerea operatiei");
+                return;
+            }
             ImageData combinedImage = operation.execute(imageDataList.toArray(new ImageData[0])); // convert list to varargs
 
             ImageSaver imageSaver = new BMPImageSaver();
@@ -46,6 +50,11 @@ public class ImageCombiner {
         List<ImageData> imageDataList = readAllFilesInParallel(arguments.inputImagesPath);
 
         Operation operation = getOperation(arguments.operation);
+        if (operation == null) {
+            System.out.println("eroare la introducerea operatiei");
+            return;
+        }
+
         ImageData combinedImage = operation.execute(imageDataList.toArray(new ImageData[0])); // convert list to varargs
 
         saveImageAsync(arguments.outputImagePath, combinedImage);
@@ -120,7 +129,9 @@ public class ImageCombiner {
         try {
             pipeIn = new PipedInputStream(pipeOut);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("system error");
+
+            return;
         }
 
         DataOutputStream outputStream = new DataOutputStream(pipeOut);

@@ -29,13 +29,16 @@ public class OutputDataProducer extends Thread {
 
                 System.out.println("OutputDataProducer a pus: " + chunkLength + " bytes");
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                System.out.println("system error");
+
+                return;
             }
 
             // add a delay to simulate some time processing
             try {
                 sleep(2000);
             } catch (InterruptedException ignored) {
+                System.out.println("system error");
             }
         }
 
@@ -43,7 +46,7 @@ public class OutputDataProducer extends Thread {
         try {
             dataOutputStream.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("system error");
         }
     }
 
