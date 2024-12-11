@@ -3,7 +3,7 @@ package packWork.arguments;
 public enum ArgumentOperation {
     AND("AND"), OR("OR"), XOR("XOR");
 
-    public final String name;
+    private final String name;
 
     ArgumentOperation(String name) {
         this.name = name;

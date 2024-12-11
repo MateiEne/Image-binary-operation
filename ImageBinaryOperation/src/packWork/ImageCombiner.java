@@ -20,7 +20,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// aceasta clasa se ocupa de combinarea binara a imaginilor si de salvarea rezultatului
 public class ImageCombiner {
+    // initial am folosit aceasta metoda pentru a combina imaginile, fara a folosi thread-uri (producer-consumer)
     public void combineImages(Arguments arguments) {
         try {
             ImageLoader imageLoader = new BMPImageLoader();
@@ -46,13 +48,17 @@ public class ImageCombiner {
         }
     }
 
+    // aceasta metoda combina imaginile folosind thread-uri (producer-consumer)
     public void combineImagesProducerConsumer(Arguments arguments) {
         long startTime = System.currentTimeMillis();
+
+        // imi pot veni mai multe fisiere ca input pe care le citesc in paralel
         List<ImageData> imageDataList = readAllFilesInParallel(arguments.inputImagesPath);
         long stopTime = System.currentTimeMillis();
-
+        // calculez timpul de executie pentru citirea fisierelor
         System.out.println("TIMP DE EXECUTIE CITIREA FISIERELOR: " + (stopTime - startTime));
 
+        // setez operatia care trebuie efectuata intre imagini
         Operation operation = getOperation(arguments.operation);
         if (operation == null) {
             System.out.println("eroare la introducerea operatiei");
@@ -60,11 +66,13 @@ public class ImageCombiner {
         }
 
         startTime = System.currentTimeMillis();
+        // execut operatia asupra imaginilor
         ImageData combinedImage = operation.execute(imageDataList.toArray(new ImageData[0])); // convert list to varargs
         stopTime = System.currentTimeMillis();
-
+        // calculez timpul de executie pentru procesarea imaginilor
         System.out.println("TIMP DE EXECUTIE PROCESARE IMAGINE: " + (stopTime - startTime));
 
+        // salvez imaginea sau imaginile rezultate in urma operatiei efectuate
         saveImageAsync(arguments.outputImagePath, combinedImage);
     }
 
@@ -132,6 +140,7 @@ public class ImageCombiner {
     }
 
     private void saveImageAsync(String filename, ImageData image) {
+        // utilizez pipe-uri pentru a salva imaginea in paralel cu procesarea ei
         PipedOutputStream pipeOut = new PipedOutputStream();
         PipedInputStream pipeIn;
         try {

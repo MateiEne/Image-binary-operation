@@ -4,7 +4,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class OutputDataProducer extends Thread {
-
     private static final int NUM_OF_CHUNKS = 4;
 
     private final DataOutputStream dataOutputStream;

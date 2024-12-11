@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileConsumer extends Thread {
-
     private final DataBuffer dataBuffer;
 
     private List<Byte> data;

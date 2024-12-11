@@ -1,5 +1,6 @@
 package packWork.image;
 
+// clasa ce contine informatiile despre o imagine
 public class ImageData {
     protected int width;
     protected int height;
